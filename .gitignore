@@ -1,0 +1,13 @@
+*.db
+*.idea
+*.env
+venv/
+.vscode
+env
+instance
+*.pyc
+*.exe
+*.jpg
+*.ico
+*.pdf
+__pycache__
