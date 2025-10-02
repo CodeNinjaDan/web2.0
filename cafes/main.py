@@ -18,7 +18,7 @@ class Base(DeclarativeBase):
     pass
 
 class Cafe(Base):
-    __tablename__ = "cafes"
+    __tablename__ = "cafe"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
@@ -57,7 +57,7 @@ class CafeResponse(CafeBase):
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False},
-    echo=False  # Set to True for SQL debugging
+    echo=False
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -73,15 +73,23 @@ app = FastAPI(
 def init_database():
     """Initialize the database and create tables if they don't exist"""
     try:
-        # Create all tables only if they don't exist (preserves existing data)
+        # Check table structure before create_all
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+
+        if 'cafe' in inspector.get_table_names():
+            print("Table 'cafe' already exists")
+            columns = inspector.get_columns('cafe')
+            print(f"Existing columns: {[col['name'] for col in columns]}")
+        else:
+            print("Table 'cafe' does not exist, creation in process...")
+
         Base.metadata.create_all(bind=engine)
 
-        # Check existing data without adding sample data
         with SessionLocal() as session:
             count = session.query(Cafe).count()
             print(f"Database initialized successfully. Found {count} cafes in existing database.")
 
-            # Log some information about the existing data
             if count > 0:
                 locations = session.query(Cafe.location).distinct().limit(5).all()
                 location_names = [loc[0] for loc in locations]
@@ -299,4 +307,4 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
