@@ -11,3 +11,4 @@ instance
 *.ico
 *.pdf
 __pycache__
+*.github
