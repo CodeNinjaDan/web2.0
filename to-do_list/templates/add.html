@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Task - To-Do List</title>
+    <!-- Tailwind CSS + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary mb-2">➕ Add New Task</h1>
+            <p class="text-base-content/70">Create a new to-do item</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <form method="POST" action="/add" class="space-y-6">
+                    <!-- Title Input -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Task Title</span>
+                            <span class="label-text-alt text-error">*Required</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="e.g., Complete project documentation"
+                            class="input input-bordered input-primary w-full"
+                            required
+                        />
+                    </div>
+
+                    <!-- Description Input -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Description</span>
+                        </label>
+                        <textarea
+                            name="description"
+                            placeholder="Add more details about your task..."
+                            class="textarea textarea-bordered textarea-primary h-32"
+                        ></textarea>
+                    </div>
+
+                    <!-- Date Input -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Due Date</span>
+                            <span class="label-text-alt text-error">*Required</span>
+                        </label>
+                        <input
+                            type="date"
+                            name="day"
+                            class="input input-bordered input-primary w-full"
+                            value="{{ today }}"
+                            required
+                        />
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-actions justify-end gap-2 mt-8">
+                        <a href="/" class="btn btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Create Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Back Link -->
+        <div class="text-center mt-6">
+            <a href="/" class="link link-primary">← Back to all tasks</a>
+        </div>
+    </div>
+</body>
+</html>
+

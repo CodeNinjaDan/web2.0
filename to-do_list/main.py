@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, Date
@@ -32,32 +32,29 @@ def get_all_todos():
     todos = db.session.execute(db.select(ToDo)).scalars().all()
     return render_template("index.html", all_todos=todos)
 
-@app.route('/add-sample')
-def add_sample_todos():
-    """Add sample todos for testing"""
-    existing = db.session.execute(db.select(ToDo)).scalars().first()
-    if not existing:
-        sample_todos = [
-            ToDo(
-                title="Complete Python Project",
-                description="Finish the Flask todo application with a beautiful frontend",
-                day=date(2025, 10, 25)
-            ),
-            ToDo(
-                title="Learn Tailwind CSS",
-                description="Master utility-first CSS framework for modern web design",
-                day=date(2025, 10, 23)
-            ),
-            ToDo(
-                title="Deploy Application",
-                description="Deploy the todo app to a cloud platform",
-                day=date(2025, 10, 30)
-            )
-        ]
-        db.session.add_all(sample_todos)
+@app.route('/add', methods=['GET', 'POST'])
+def add_todo():
+    """Add a new todo"""
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        day_str = request.form.get('day')
+
+        try:
+            day = date.fromisoformat(day_str)
+        except (ValueError, TypeError):
+            day = date.today()
+
+        new_todo = ToDo(
+            title=title,
+            description=description,
+            day=day
+        )
+        db.session.add(new_todo)
         db.session.commit()
-        return "Sample todos added! <a href='/all'>View all todos</a>"
-    return "Todos already exist! <a href='/all'>View all todos</a>"
+        return redirect(url_for('get_all_todos'))
+
+    return render_template("add.html")
 
 
 
