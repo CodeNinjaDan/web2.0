@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <!-- Tailwind CSS + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary mb-2">📝 My To-Do List</h1>
+            <p class="text-base-content/70">Manage your daily tasks efficiently</p>
+        </div>
+
+        <!-- Todo List -->
+        <div class="bg-base-100 rounded-lg shadow-xl p-6">
+            {% if all_todos %}
+                <div class="space-y-4">
+                    {% for todo in all_todos %}
+                    <div class="card bg-base-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="card-body">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <h2 class="card-title text-xl mb-2">{{ todo.title }}</h2>
+                                    <p class="text-base-content/70 mb-3">{{ todo.description }}</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="badge badge-primary">📅 {{ todo.day.strftime('%B %d, %Y') }}</span>
+                                    </div>
+                                </div>
+                                <div class="badge badge-lg badge-ghost">ID: {{ todo.id }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <div class="text-6xl mb-4">📋</div>
+                    <h3 class="text-2xl font-semibold mb-2">No todos yet!</h3>
+                    <p class="text-base-content/70">Start by adding your first task.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Stats Footer -->
+        {% if all_todos %}
+        <div class="stats shadow mt-6 w-full">
+            <div class="stat place-items-center">
+                <div class="stat-title">Total Tasks</div>
+                <div class="stat-value text-primary">{{ all_todos|length }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
