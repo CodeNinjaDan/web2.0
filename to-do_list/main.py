@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, Date
+from sqlalchemy import Integer, String, Text, Date, Boolean
 from datetime import date
 
 
@@ -19,6 +19,7 @@ class ToDo(db.Model):
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(Text)
     day: Mapped[date] = mapped_column(Date, nullable=False)
+    completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -55,6 +56,24 @@ def add_todo():
         return redirect(url_for('get_all_todos'))
 
     return render_template("add.html")
+
+@app.route('/complete/<int:todo_id>')
+def complete_todo(todo_id):
+    """Mark a todo as completed"""
+    todo = db.session.get(ToDo, todo_id)
+    if todo:
+        todo.completed = not todo.completed
+        db.session.commit()
+    return redirect(url_for('get_all_todos'))
+
+@app.route('/delete/<int:todo_id>')
+def delete_todo(todo_id):
+    """Delete a todo permanently"""
+    todo = db.session.get(ToDo, todo_id)
+    if todo:
+        db.session.delete(todo)
+        db.session.commit()
+    return redirect(url_for('get_all_todos'))
 
 
 
