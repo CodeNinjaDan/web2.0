@@ -68,6 +68,30 @@ def add_todo():
 
     return render_template("add.html")
 
+@app.route('/edit/<int:todo_id>', methods=['GET', 'POST'])
+def edit_todo(todo_id):
+    """Edit an existing todo"""
+    todo = db.session.get(ToDo, todo_id)
+    if not todo:
+        return redirect(url_for('get_all_todos'))
+
+    if request.method == 'POST':
+        todo.title = request.form.get('title')
+        todo.description = request.form.get('description')
+        day_str = request.form.get('day')
+
+        try:
+            todo.day = date.fromisoformat(day_str)
+        except (ValueError, TypeError):
+            pass
+
+        db.session.commit()
+
+        filter_by = request.args.get('filter', 'all')
+        return redirect(url_for('get_all_todos', filter=filter_by))
+
+    return render_template("edit.html", todo=todo)
+
 @app.route('/complete/<int:todo_id>')
 def complete_todo(todo_id):
     """Mark a todo as completed"""
