@@ -30,8 +30,19 @@ def home():
 
 @app.route('/all')
 def get_all_todos():
-    todos = db.session.execute(db.select(ToDo)).scalars().all()
-    return render_template("index.html", all_todos=todos)
+    # Get filter parameter from URL (default: 'all')
+    filter_by = request.args.get('filter', 'all')
+
+    # Build query with sorting (oldest first by date, then by ID)
+    query = db.select(ToDo).order_by(ToDo.day.asc(), ToDo.id.asc())
+
+    if filter_by == 'completed':
+        query = query.where(ToDo.completed == True)
+    elif filter_by == 'pending':
+        query = query.where(ToDo.completed == False)
+
+    todos = db.session.execute(query).scalars().all()
+    return render_template("index.html", all_todos=todos, current_filter=filter_by)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_todo():
@@ -64,7 +75,10 @@ def complete_todo(todo_id):
     if todo:
         todo.completed = not todo.completed
         db.session.commit()
-    return redirect(url_for('get_all_todos'))
+
+    # Preserve the filter when redirecting back
+    filter_by = request.args.get('filter', 'all')
+    return redirect(url_for('get_all_todos', filter=filter_by))
 
 @app.route('/delete/<int:todo_id>')
 def delete_todo(todo_id):
@@ -73,7 +87,9 @@ def delete_todo(todo_id):
     if todo:
         db.session.delete(todo)
         db.session.commit()
-    return redirect(url_for('get_all_todos'))
+
+    filter_by = request.args.get('filter', 'all')
+    return redirect(url_for('get_all_todos', filter=filter_by))
 
 
 
